@@ -20,11 +20,11 @@ def message_received(client, server, message):
     server.send_message_to_all("Client(%d) said: %s" % (client['id'], message))
 
 
-PORT=8989
+PORT=443
 print("==========starting=======")
 server = WebsocketServer(PORT)
 server.set_fn_new_client(new_client)
 server.set_fn_client_left(client_left)
 server.set_fn_message_received(message_received)
-server.run_forever()
 print("started")
+server.run_forever()
