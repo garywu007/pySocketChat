@@ -1,1 +1,1 @@
-web: gunicorn -k websocket_server.worker chat:app
+web: gunicorn -k websocket_server socketServer:app
