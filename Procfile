@@ -1,1 +1,1 @@
-web: gunicorn --worker-class eventlet -w 1 --pythonpath app:app
+web: gunicorn -k websocket_server.worker chat:app
