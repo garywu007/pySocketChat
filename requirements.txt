@@ -66,4 +66,3 @@ websocket-server==0.4
 Werkzeug==1.0.1
 wheel==0.34.2
 wrapt==1.12.1
-xkit==0.0.0
