@@ -20,7 +20,7 @@ def message_received(client, server, message):
     server.send_message_to_all("Client(%d) said: %s" % (client['id'], message))
 
 
-PORT=process.env.PORT || 8989
+PORT=int(process.env.PORT)
 print("==========starting=======" + str(PORT))
 server = WebsocketServer(PORT)
 server.set_fn_new_client(new_client)
