@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title>chat-HTML</title>
+        <style>
+            body{
+                overflow: hidden;
+            }
+            h2{
+                margin-top: 30px;
+                text-align: center;
+                background-color: #393D49;
+                color: #fff;
+                ont-weight: normal;
+            padding: 15px 0
+            }
+            #chat{
+                text-align: center;
+            }
+            #win{
+                margin-top: 20px;
+                text-align: center;
+            }
+            #sse{
+                margin-top: 10px;
+                text-align: center;
+            }
+            #sse button{
+                background-color: #0075FF;
+                color: #fff;
+                height: 40px;
+                border: 0;
+                border-radius: 3px 3px;
+                padding-left: 10px;
+                padding-right: 10px;
+                cursor: pointer;
+            }
+        </style>
+        <script src="https://code.jquery.com/jquery-1.12.4.min.js"></script>
+    </head>
+    <body>
+        <h2>DC 聊天室</h2>
+            <div id="chat">
+                <textarea id="history" cols="80" rows="20" readonly></textarea>
+            </div>
+
+            <div id="win">
+                <textarea id="messagewin" cols="80" rows="5"></textarea>
+            </div>
+
+            <div id="sse">
+                使用
+                <input type="radio" id="sendEnter" name="sendShortCut" value="Enter" checked="checked">
+                <label for="sendEnter" style="background-color: #0075FF; border-radius: 0.1em; color: white; padding: 0 2px;">ENTER</label>
+                <input type="radio" id="sendCTRLEnter" name="sendShortCut" value="CTRLEnter">
+                <label for="sendCTRLEnter" style="background-color: #0075FF; border-radius: 0.1em; color: white; padding: 0 2px;">CTRL + ENTER</label>
+
+                <button onclick="sendMessage()" id="sseBtn">傳送對話</button>
+            </div>
+
+        <script type="text/javascript">
+            var oHistory = $('#history');
+            var oWin = $('#messagewin');
+
+            if ("WebSocket" in window){
+                console.log("您的瀏覽器支援 WebSocket!");
+                //var ws = new WebSocket("ws://localhost:8989");
+                var ws = new WebSocket("ws://172.20.106.17:8989");
+                //var ws = new WebSocket("wss://py-socket-chat.herokuapp.com/0.0.0.0");
+                ws.onopen = function(){
+                    console.log("websocket 已連線上");
+                }
+
+                ws.onmessage = function (evt) {
+                    var dataReceive = evt.data;
+                    dataReceive = decodeURI(dataReceive);
+                    //console.log("資料已接收..."+dataReceive);
+                    $('#history').val($('#history').val()+dataReceive+"\n");
+
+                    var elmnt = document.getElementById("history");
+                    elmnt.scrollTop = elmnt.scrollHeight;
+                };
+
+                ws.onclose = function() {
+                    console.log("連線已關閉...");
+                };
+
+            }else{
+                // 瀏覽器不支援 WebSocket
+                console.log("您的瀏覽器不支援 WebSocket!");
+            }
+
+            function sendMessage(){
+                var dataSend = oWin.val().trim();
+                if("" != dataSend){
+                    dataSend = encodeURI(dataSend);
+                    ws.send(dataSend);
+                    oWin.val('');
+                } else {
+                    alert("你未有輸入文字喔");
+                }
+                
+            }
+
+            var input = document.getElementById("messagewin");
+            input.addEventListener("keyup", function(event) {
+                if ((event.ctrlKey && event.keyCode === 13 && $('#sendCTRLEnter').is(':checked')) ||
+                    (!event.ctrlKey && event.keyCode === 13 && $('#sendEnter').is(':checked'))) {
+                    event.preventDefault();
+                    document.getElementById("sseBtn").click();
+                }
+                
+                if (event.ctrlKey && event.keyCode === 13 && $('#sendEnter').is(':checked')) {
+                    event.preventDefault();
+                    oWin.val(oWin.val() + "\n");
+                }
+            });
+        </script>
+    </body>
+</html>
